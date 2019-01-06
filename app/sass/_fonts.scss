@@ -1,0 +1,5 @@
+@import "_mixins/font-face";
+
+@include font-face ("GothamPro", "../fonts/GothamPro/GothamPro", normal);
+@include font-face ("GothamPro", "../fonts/GothamPro/GothamPro-Black", 900);
+@include font-face ("GothamPro", "../fonts/GothamPro/GothamPro-Medium", 500);
