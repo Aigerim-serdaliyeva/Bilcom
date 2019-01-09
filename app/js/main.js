@@ -183,6 +183,97 @@ $(document).ready(function () {
     }
   });
 
+  $(".ctable__select-td select").change(function() {
+    var val = +$(this).val() + 1;
+    var $parent = $(this).closest('.ctable');
+    $parent.find("tbody td").removeClass("active").filter(':nth-child(' + val +')').addClass('active');
+  });
+
+  var $questionModal = $(".question-modal");
+  $(".perehod").click(function(e) {
+    e.preventDefault();
+    var $this = $(this);
+
+    var $show = $questionModal.find("#" + $this.data("show"));
+    var $hide = $questionModal.find("#" + $this.data("hide"));
+
+    var $question = $this.closest(".question");
+    var variantSelected = false;
+    var drugoeSelected = false;
+
+    var $variants = $question.find('.checkbox [type=radio], .checkbox [type=checkbox]');
+    $variants.each(function() {
+      var $input = $(this);
+      if ($input.prop('checked')) {
+        // Если выбран другое, то пользователь обьязан указать свой вариант
+        if ($input.hasClass("drugoe")) {
+          drugoeSelected = true;
+          var vawVariant = $input.closest(".checkbox").siblings(".ukazat").val();
+          if (vawVariant && vawVariant.length > 0) {
+            variantSelected = true;
+          }
+        } else {
+          variantSelected = true;
+        }
+      }
+    });  
+
+    var errorText = "";
+
+    if ($variants.length > 0 && !variantSelected) {
+      errorText = drugoeSelected ? "Укажите ваш вариант" : "Выберите один из вариантов";
+    }
+
+    var $requireds = $question.find("input[required], textarea[required]");
+    $requireds.each(function() {
+      var val = $(this).val();
+      if (!val) {
+        errorText = "Заполните все поля";
+      }
+    });
+
+    if (errorText) {
+      $question.addClass("has-error");
+      $question.find(".question__error").html(errorText);
+      return;
+    }
+
+    $show.removeClass("d-none");
+    $hide.addClass("d-none");
+  });
+
+  $(".prev").click(function(e) {
+    e.preventDefault();
+    var $this = $(this);
+
+    var $show = $questionModal.find("#" + $this.data("show"));
+    var $hide = $questionModal.find("#" + $this.data("hide"));
+    
+    $show.removeClass("d-none");
+    $hide.addClass("d-none");
+  });
+
+  /* Этот код используется если Quiz будет открываться в модальнос окне. При закрытия модального окна Quiz вернется в первоначальный вид. (То есть будет виден первый вопрос и уберется все ошибки)*/
+  $(document).on('closing', '.question-modal', function (e) {
+    $questionModal.find('.question')
+      .removeClass('has-error')
+      .addClass('d-none')
+      .filter('#question-1')
+      .removeClass('d-none');
+  });
+
+  $(".carousel-company").owlCarousel({
+    loop: false,
+    smartSpeed: 500,
+    dots: false,
+    nav: true,
+    margin: 30,
+    navText: ['', ''],
+    responsive: {
+      0: { items: 1, mouseDrag: false,   },
+      480: { items: 1, mouseDrag: true,},
+    },
+  });
 
   $(".carousel-klient").owlCarousel({
     loop: false,
@@ -277,3 +368,4 @@ function parseGET(url) {
 
   return (GET);
 };
+
